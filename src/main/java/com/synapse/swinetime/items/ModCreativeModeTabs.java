@@ -18,7 +18,7 @@ public class ModCreativeModeTabs {
             () -> CreativeModeTab.builder().icon(() -> new ItemStack(Items.BEEF))
                     .title(Component.translatable("creativetab.swinetime_tab"))
                     .displayItems((pParameters, pOutput) -> {
-
+                        pOutput.accept(ModItems.DIRE_BOAR_SPAWN_EGG.get());
                     })
                     .build());
 
