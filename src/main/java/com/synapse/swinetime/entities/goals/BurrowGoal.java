@@ -17,9 +17,8 @@ import java.util.EnumSet;
 
 public class BurrowGoal extends Goal {
     private final DireBoarEntity mob;
-    private static final ResourceLocation BURROW_LOOT_TABLE = ResourceLocation.fromNamespaceAndPath(SwineTimeMod.MODID, "entities/dire_boar_burrow");
 
-    private static final int INTERVAL = 120;
+    private static final int INTERVAL = 200;
     private static final int DURATION = 15;
 
     private long lastBurrow;
@@ -33,7 +32,7 @@ public class BurrowGoal extends Goal {
 
     @Override
     public boolean canUse() {
-        return mob.level().getGameTime() - this.lastBurrow >= INTERVAL;
+        return mob.level().getGameTime() - this.lastBurrow >= INTERVAL && !this.mob.isVehicle() && this.mob.isTamed();
     }
 
     @Override
@@ -60,7 +59,7 @@ public class BurrowGoal extends Goal {
     public void stop() {
         if (mob.level() instanceof  ServerLevel serverLevel) {
             LootTable table = serverLevel.getServer().getLootData().
-                    getLootTable(BURROW_LOOT_TABLE);
+                    getLootTable(ResourceLocation.fromNamespaceAndPath(SwineTimeMod.MODID, "entities/dire_boar_burrow"));
 
             LootParams context = new LootParams.Builder(serverLevel)
                     .withParameter(LootContextParams.THIS_ENTITY, mob)
