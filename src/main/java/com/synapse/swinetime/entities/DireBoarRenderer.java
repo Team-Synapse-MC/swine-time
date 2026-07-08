@@ -19,10 +19,10 @@ public class DireBoarRenderer extends AzEntityRenderer<DireBoarEntity> {
 
     public DireBoarRenderer(EntityRendererProvider.Context context) {
         super(AzEntityRendererConfig.<DireBoarEntity>builder(GEO, TEX)
-                .setRenderEntry(contextPipeline -> {
-                    contextPipeline.animatable().updateAnimations();
-                    return contextPipeline;
-                })
+//                .setRenderEntry(contextPipeline -> {
+//                    contextPipeline.animatable().updateAnimations();
+//                    return contextPipeline;
+//                })
                 .setAnimatorProvider(DireBoarAnimator::new)
                 .build(), context);
     }

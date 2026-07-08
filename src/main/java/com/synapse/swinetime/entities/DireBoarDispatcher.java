@@ -4,19 +4,19 @@ import mod.azure.azurelib.animation.dispatch.command.AzCommand;
 import mod.azure.azurelib.animation.play_behavior.AzPlayBehaviors;
 
 public class DireBoarDispatcher {
-    private final AzCommand IDLE_COMMAND = AzCommand.create(
+    private static final AzCommand IDLE_COMMAND = AzCommand.create(
             "base_controller",
             "idle",
             AzPlayBehaviors.LOOP
     );
 
-    private final AzCommand WALK_COMMAND = AzCommand.create(
+    private static final AzCommand WALK_COMMAND = AzCommand.create(
             "base_controller",
             "walk",
             AzPlayBehaviors.LOOP
     );
 
-    private final AzCommand RUN_COMMAND = AzCommand.create(
+    private static final AzCommand RUN_COMMAND = AzCommand.create(
             "base_controller",
             "run",
             AzPlayBehaviors.LOOP

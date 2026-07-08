@@ -12,12 +12,7 @@
 			},
 			"bones": [
 				{
-					"name": "Root",
-					"pivot": [0, 0, 24]
-				},
-				{
 					"name": "DireBoar",
-					"parent": "Root",
 					"pivot": [0, 0, 24]
 				},
 				{
