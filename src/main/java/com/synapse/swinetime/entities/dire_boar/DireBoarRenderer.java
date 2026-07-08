@@ -1,4 +1,4 @@
-package com.synapse.swinetime.entities;
+package com.synapse.swinetime.entities.dire_boar;
 
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.resources.ResourceLocation;

@@ -1,4 +1,4 @@
-package com.synapse.swinetime.entities;
+package com.synapse.swinetime.entities.dire_boar;
 
 import com.synapse.swinetime.SwineTimeMod;
 import net.minecraft.resources.ResourceLocation;

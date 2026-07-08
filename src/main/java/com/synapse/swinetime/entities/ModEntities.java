@@ -1,6 +1,8 @@
 package com.synapse.swinetime.entities;
 
 import com.synapse.swinetime.SwineTimeMod;
+import com.synapse.swinetime.entities.dire_boar.DireBoarEntity;
+import com.synapse.swinetime.entities.dire_boar.DireBoarRenderer;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.MobCategory;
