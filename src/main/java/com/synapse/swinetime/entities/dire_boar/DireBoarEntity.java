@@ -1,12 +1,16 @@
 package com.synapse.swinetime.entities.dire_boar;
 
 import com.synapse.swinetime.entities.goals.BurrowGoal;
+import com.synapse.swinetime.entities.goals.DireBoarFollowOwner;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
+import net.minecraft.world.entity.ai.goal.FloatGoal;
+import net.minecraft.world.entity.ai.goal.LookAtPlayerGoal;
+import net.minecraft.world.entity.ai.goal.RandomLookAroundGoal;
 import net.minecraft.world.entity.ai.goal.RandomStrollGoal;
 import net.minecraft.world.entity.animal.horse.AbstractHorse;
 import net.minecraft.world.entity.monster.Monster;
@@ -27,8 +31,9 @@ import software.bernie.geckolib.core.animation.AnimationController;
 import software.bernie.geckolib.core.animation.RawAnimation;
 import software.bernie.geckolib.core.object.PlayState;
 
-public class DireBoarEntity extends AbstractHorse implements GeoEntity, PlayerRideable {
+public class DireBoarEntity extends AbstractHorse implements GeoEntity, PlayerRideable, OwnableEntity {
     private final AnimatableInstanceCache cache = new SingletonAnimatableInstanceCache(this);
+    private static final float SPRINT_SPEED_MULT = 1.5f;
 
     public DireBoarEntity(EntityType<? extends AbstractHorse> pEntityType, Level pLevel) {
         super(pEntityType, pLevel);
@@ -40,13 +45,18 @@ public class DireBoarEntity extends AbstractHorse implements GeoEntity, PlayerRi
 
     @Override
     protected void registerGoals() {
-        this.goalSelector.addGoal(1, new RandomStrollGoal(this, 0.7D));
-        this.goalSelector.addGoal(1, new BurrowGoal(this));
+        this.goalSelector.addGoal(1, new FloatGoal(this));
+        this.goalSelector.addGoal(6, new DireBoarFollowOwner(this, 1.0D, 4.0F, 8.0F, 3.0F, false));
+        this.goalSelector.addGoal(8, new RandomStrollGoal(this, 1.0D));
+        this.goalSelector.addGoal(7, new BurrowGoal(this));
+        this.goalSelector.addGoal(9, new LookAtPlayerGoal(this, Player.class, 8.0F));
+        this.goalSelector.addGoal(10, new RandomLookAroundGoal(this));
+
     }
 
     public static AttributeSupplier setAttributes() {
         return Monster.createMobAttributes()
-                .add(Attributes.MOVEMENT_SPEED, 0.1f)
+                .add(Attributes.MOVEMENT_SPEED, 0.25f)
                 .build();
     }
 
@@ -87,7 +97,7 @@ public class DireBoarEntity extends AbstractHorse implements GeoEntity, PlayerRi
             tameWithName(pPlayer);
             return InteractionResult.SUCCESS;
         } else {
-            if (this.isTamed()) {
+            if (this.isTamed() && this.getOwner() != null && this.getOwner().equals(pPlayer)) {
                 pPlayer.startRiding(this);
                 return InteractionResult.SUCCESS;
             } else {
@@ -96,11 +106,20 @@ public class DireBoarEntity extends AbstractHorse implements GeoEntity, PlayerRi
         }
     }
 
+//    @Override
+//    protected float getRiddenSpeed(Player pPlayer) {
+//        float baseSpeed = (float) this.getAttributeBaseValue(Attributes.MOVEMENT_SPEED);
+//        if (this.isSprinting()) {
+//            return baseSpeed * 1.5f;
+//        }
+//        return baseSpeed;
+//    }
+
     @Override
-    protected float getRiddenSpeed(Player pPlayer) {
+    public float getSpeed() {
         float baseSpeed = (float) this.getAttributeBaseValue(Attributes.MOVEMENT_SPEED);
-        if (pPlayer.isSprinting() || this.isSprinting()) {
-            return baseSpeed * 1.5f;
+        if (isSprinting()) {
+            return baseSpeed * SPRINT_SPEED_MULT;
         }
         return baseSpeed;
     }
@@ -121,19 +140,21 @@ public class DireBoarEntity extends AbstractHorse implements GeoEntity, PlayerRi
     private PlayState predicate(software.bernie.geckolib.core.animation.AnimationState<DireBoarEntity> animationState) {
         if (animationState.isMoving()) {
             if (this.isVehicle() && !this.getPassengers().isEmpty() && this.getPassengers().get(0) instanceof Player rider) {
-
                 if (rider.isSprinting() || this.isSprinting()) {
                     animationState.setAndContinue(RawAnimation.begin().then("Run", Animation.LoopType.LOOP));
                 } else {
                     animationState.setAndContinue(RawAnimation.begin().then("walk", Animation.LoopType.LOOP));
                 }
             } else {
-                animationState.setAndContinue(RawAnimation.begin().then("walk", Animation.LoopType.LOOP));
+                if (this.isSprinting()) {
+                    animationState.setAndContinue(RawAnimation.begin().then("Run", Animation.LoopType.LOOP));
+                } else {
+                    animationState.setAndContinue(RawAnimation.begin().then("walk", Animation.LoopType.LOOP));
+                }
             }
         } else {
             animationState.setAndContinue(RawAnimation.begin().then("idle", Animation.LoopType.LOOP));
         }
-
         return PlayState.CONTINUE;
     }
 
