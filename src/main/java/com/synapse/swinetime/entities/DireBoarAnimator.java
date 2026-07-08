@@ -1,6 +1,7 @@
 package com.synapse.swinetime.entities;
 
 import com.synapse.swinetime.SwineTimeMod;
+import mod.azure.azurelib.animation.AzAnimatorConfig;
 import mod.azure.azurelib.animation.controller.AzAnimationController;
 import mod.azure.azurelib.animation.controller.AzAnimationControllerContainer;
 import mod.azure.azurelib.animation.impl.AzEntityAnimator;
@@ -10,8 +11,12 @@ import org.jetbrains.annotations.NotNull;
 public class DireBoarAnimator extends AzEntityAnimator<DireBoarEntity> {
     private static final ResourceLocation ANIMATIONS = ResourceLocation.fromNamespaceAndPath(
             SwineTimeMod.MODID,
-            "animations/entity/dire_boar.animation.json"
+            "animations/entities/dire_boar.animation.json"
     );
+
+    public DireBoarAnimator() {
+        super(AzAnimatorConfig.defaultConfig());
+    }
 
     @Override
     public void registerControllers(AzAnimationControllerContainer<DireBoarEntity> animationControllerContainer) {

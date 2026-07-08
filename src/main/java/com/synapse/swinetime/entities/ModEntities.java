@@ -19,7 +19,7 @@ public class ModEntities {
 
     public static final RegistryObject<EntityType<DireBoarEntity>> DIRE_BOAR =
             REGISTRY.register("dire_boar",
-                    () -> EntityType.Builder.of(DireBoarEntity::new, MobCategory.CREATURE)
+                    () -> EntityType.Builder.of(DireBoarEntity::new, MobCategory.MONSTER)
                             .sized(2.5f, 2.5f)
                             .build(ResourceLocation.fromNamespaceAndPath(SwineTimeMod.MODID, "dire_boar").toString())
             );
