@@ -78,6 +78,10 @@ public class DireBoarEntity extends AbstractHorse implements GeoEntity, PlayerRi
     @Override
     public @NotNull InteractionResult mobInteract(Player pPlayer, @NotNull InteractionHand pHand) {
         Item item = pPlayer.getItemInHand(pHand).getItem();
+        if (isFood(pPlayer.getItemInHand(pHand))) {
+            return super.mobInteract(pPlayer, pHand);
+        }
+
         // TODO: fill in for hearty potato
         if (!this.isTamed() && item.equals(Items.BONE)) {
             tameWithName(pPlayer);
@@ -87,7 +91,7 @@ public class DireBoarEntity extends AbstractHorse implements GeoEntity, PlayerRi
                 pPlayer.startRiding(this);
                 return InteractionResult.SUCCESS;
             } else {
-                return super.mobInteract(pPlayer, pHand);
+                return InteractionResult.FAIL;
             }
         }
     }
