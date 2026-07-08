@@ -1,10 +1,12 @@
 package com.synapse.swinetime.entities.dire_boar;
 
+import com.synapse.swinetime.entities.goals.BurrowGoal;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
+import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.ai.goal.RandomStrollGoal;
 import net.minecraft.world.entity.monster.Monster;
 import net.minecraft.world.entity.player.Player;
@@ -28,16 +30,19 @@ public class DireBoarEntity extends TamableAnimal implements GeoEntity {
 
     public DireBoarEntity(EntityType<? extends TamableAnimal> pEntityType, Level pLevel) {
         super(pEntityType, pLevel);
+        this.noCulling = true;
     }
 
     @Override
     protected void registerGoals() {
-        super.registerGoals();
-        this.goalSelector.addGoal(1, new RandomStrollGoal(this, 0.3D));
+        this.goalSelector.addGoal(1, new RandomStrollGoal(this, 0.7D));
+        this.goalSelector.addGoal(1, new BurrowGoal(this));
     }
 
     public static AttributeSupplier setAttributes() {
-        return Monster.createMobAttributes().build();
+        return Monster.createMobAttributes()
+                .add(Attributes.MOVEMENT_SPEED, 0.1f)
+                .build();
     }
 
     @Override
@@ -60,7 +65,9 @@ public class DireBoarEntity extends TamableAnimal implements GeoEntity {
 
     @Override
     public void registerControllers(AnimatableManager.ControllerRegistrar controllers) {
-        controllers.add(new AnimationController<>(this, "movement", this::predicate));
+        controllers.add(new AnimationController<>(this, "default", 5, this::predicate)
+                .triggerableAnim("burrow", RawAnimation.begin().then("eat", Animation.LoopType.PLAY_ONCE))
+        );
     }
 
     private PlayState predicate(software.bernie.geckolib.core.animation.AnimationState<DireBoarEntity> animationState) {
