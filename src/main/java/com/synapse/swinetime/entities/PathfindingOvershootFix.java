@@ -23,7 +23,7 @@ public class PathfindingOvershootFix {
                 double dot = velocity2D.normalize().dot(toCurrentNode2D.normalize());
                 double distFromCurrent = toCurrentNode2D.length();
 
-                if (dot < 0 && distFromCurrent > .3) {
+                if (dot < 0.2 && distFromCurrent > .1) {
                     currentPath.advance();
                 }
             }

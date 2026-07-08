@@ -55,13 +55,13 @@ public class DireBoarEntity extends AbstractHorse implements GeoEntity, PlayerRi
         this.goalSelector.addGoal(10, new RandomLookAroundGoal(this));
 
         this.targetSelector.addGoal(1, new BoarOwnerHurtByTargetGoal(this));
-
     }
 
     public static AttributeSupplier setAttributes() {
         return Monster.createMobAttributes()
                 .add(Attributes.MOVEMENT_SPEED, 0.25f)
-                .add(Attributes.ATTACK_DAMAGE, 2.0f)
+                .add(Attributes.ATTACK_DAMAGE, 6.0f)
+                .add(Attributes.MAX_HEALTH, 20.0f)
                 .build();
     }
 
