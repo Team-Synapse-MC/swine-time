@@ -18,21 +18,21 @@ import java.util.EnumSet;
 public class BurrowGoal extends Goal {
     private final DireBoarEntity mob;
 
-    private static final int INTERVAL = 200;
     private static final int DURATION = 15;
 
-    private long lastBurrow;
     private int burrowTimer;
 
     public BurrowGoal(DireBoarEntity direBoar) {
         this.mob = direBoar;
-        this.lastBurrow = this.mob.level().getGameTime();
         this.setFlags(EnumSet.of(Flag.MOVE, Flag.LOOK));
     }
 
     @Override
     public boolean canUse() {
-        return mob.level().getGameTime() - this.lastBurrow >= INTERVAL && !this.mob.isVehicle() && this.mob.isTamed();
+        return mob.level().getGameTime() % 1000 == 0
+                && !this.mob.isVehicle()
+                && this.mob.isTamed()
+                && this.mob.getTarget() == null;
     }
 
     @Override
@@ -42,7 +42,6 @@ public class BurrowGoal extends Goal {
 
     @Override
     public void start() {
-        this.lastBurrow = mob.level().getGameTime();
         this.mob.triggerAnim("default", "burrow");
         burrowTimer = DURATION;
     }

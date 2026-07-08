@@ -1,5 +1,6 @@
 package com.synapse.swinetime.entities.goals;
 
+import com.synapse.swinetime.entities.PathfindingOvershootFix;
 import com.synapse.swinetime.entities.dire_boar.DireBoarEntity;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.LivingEntity;
@@ -108,6 +109,7 @@ public class DireBoarFollowOwner extends Goal {
                 this.navigation.moveTo(this.owner, this.speedModifier);
             }
         }
+        PathfindingOvershootFix.overshootFix(this.mob);
     }
 
     private void teleportToOwner() {

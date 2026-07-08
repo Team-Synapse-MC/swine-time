@@ -1,17 +1,13 @@
 package com.synapse.swinetime.entities.dire_boar;
 
-import com.synapse.swinetime.entities.goals.BurrowGoal;
-import com.synapse.swinetime.entities.goals.DireBoarFollowOwner;
+import com.synapse.swinetime.entities.goals.*;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
-import net.minecraft.world.entity.ai.goal.FloatGoal;
-import net.minecraft.world.entity.ai.goal.LookAtPlayerGoal;
-import net.minecraft.world.entity.ai.goal.RandomLookAroundGoal;
-import net.minecraft.world.entity.ai.goal.RandomStrollGoal;
+import net.minecraft.world.entity.ai.goal.*;
 import net.minecraft.world.entity.animal.horse.AbstractHorse;
 import net.minecraft.world.entity.monster.Monster;
 import net.minecraft.world.entity.player.Player;
@@ -46,17 +42,26 @@ public class DireBoarEntity extends AbstractHorse implements GeoEntity, PlayerRi
     @Override
     protected void registerGoals() {
         this.goalSelector.addGoal(1, new FloatGoal(this));
+        this.goalSelector.addGoal(4, new AnimatedCooldownMeleeAttackGoal(
+                this, 1.0D, false, 20,
+                "default", "attack", 20, 10
+                ).setFreezeMovement(0, 15)
+        );
+        this.goalSelector.addGoal(3, new SprintAtTargetGoal(this, SPRINT_SPEED_MULT, 7, 3));
         this.goalSelector.addGoal(6, new DireBoarFollowOwner(this, 1.0D, 4.0F, 8.0F, 3.0F, false));
         this.goalSelector.addGoal(8, new RandomStrollGoal(this, 1.0D));
         this.goalSelector.addGoal(7, new BurrowGoal(this));
         this.goalSelector.addGoal(9, new LookAtPlayerGoal(this, Player.class, 8.0F));
         this.goalSelector.addGoal(10, new RandomLookAroundGoal(this));
 
+        this.targetSelector.addGoal(1, new BoarOwnerHurtByTargetGoal(this));
+
     }
 
     public static AttributeSupplier setAttributes() {
         return Monster.createMobAttributes()
                 .add(Attributes.MOVEMENT_SPEED, 0.25f)
+                .add(Attributes.ATTACK_DAMAGE, 2.0f)
                 .build();
     }
 
@@ -106,15 +111,6 @@ public class DireBoarEntity extends AbstractHorse implements GeoEntity, PlayerRi
         }
     }
 
-//    @Override
-//    protected float getRiddenSpeed(Player pPlayer) {
-//        float baseSpeed = (float) this.getAttributeBaseValue(Attributes.MOVEMENT_SPEED);
-//        if (this.isSprinting()) {
-//            return baseSpeed * 1.5f;
-//        }
-//        return baseSpeed;
-//    }
-
     @Override
     public float getSpeed() {
         float baseSpeed = (float) this.getAttributeBaseValue(Attributes.MOVEMENT_SPEED);
@@ -134,6 +130,7 @@ public class DireBoarEntity extends AbstractHorse implements GeoEntity, PlayerRi
     public void registerControllers(AnimatableManager.ControllerRegistrar controllers) {
         controllers.add(new AnimationController<>(this, "default", 5, this::predicate)
                 .triggerableAnim("burrow", RawAnimation.begin().then("eat", Animation.LoopType.PLAY_ONCE))
+                .triggerableAnim("attack", RawAnimation.begin().then("attack", Animation.LoopType.PLAY_ONCE))
         );
     }
 
