@@ -27,7 +27,7 @@ public class BoarOwnerHurtByTargetGoal extends TargetGoal {
             } else {
                 this.ownerLastHurtBy = livingentity.getLastHurtByMob();
                 int i = livingentity.getLastHurtByMobTimestamp();
-                return i != this.timestamp && this.canAttack(this.ownerLastHurtBy, TargetingConditions.DEFAULT);
+                return i != this.timestamp && this.canAttack(this.ownerLastHurtBy, TargetingConditions.DEFAULT) && this.mob.canAttack(this.ownerLastHurtBy);
             }
         } else {
             return false;

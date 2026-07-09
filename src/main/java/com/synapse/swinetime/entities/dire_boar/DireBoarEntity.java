@@ -8,6 +8,7 @@ import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.ai.goal.*;
+import net.minecraft.world.entity.ai.goal.target.HurtByTargetGoal;
 import net.minecraft.world.entity.animal.horse.AbstractHorse;
 import net.minecraft.world.entity.monster.Monster;
 import net.minecraft.world.entity.player.Player;
@@ -26,6 +27,8 @@ import software.bernie.geckolib.core.animation.Animation;
 import software.bernie.geckolib.core.animation.AnimationController;
 import software.bernie.geckolib.core.animation.RawAnimation;
 import software.bernie.geckolib.core.object.PlayState;
+
+import java.util.Objects;
 
 public class DireBoarEntity extends AbstractHorse implements GeoEntity, PlayerRideable, OwnableEntity {
     private final AnimatableInstanceCache cache = new SingletonAnimatableInstanceCache(this);
@@ -56,6 +59,17 @@ public class DireBoarEntity extends AbstractHorse implements GeoEntity, PlayerRi
 
         this.targetSelector.addGoal(2, new BoarOwnerHurtByTargetGoal(this));
         this.targetSelector.addGoal(2, new BoarOwnerHurtTargetGoal(this));
+        this.targetSelector.addGoal(1, new HurtByTargetGoal(this));
+    }
+
+    @Override
+    public boolean canAttack(@NotNull LivingEntity pTarget) {
+        if (Objects.equals(getOwner(), pTarget)) {
+            return false;
+        } else if (pTarget instanceof DireBoarEntity boar && Objects.equals(getOwner(), boar.getOwner())) {
+            return false;
+        }
+        return super.canAttack(pTarget);
     }
 
     public static AttributeSupplier setAttributes() {
@@ -90,6 +104,11 @@ public class DireBoarEntity extends AbstractHorse implements GeoEntity, PlayerRi
     @Override
     public boolean isSaddled() {
         return true;
+    }
+
+    @Override
+    public boolean isSaddleable() {
+        return false;
     }
 
     @Override
