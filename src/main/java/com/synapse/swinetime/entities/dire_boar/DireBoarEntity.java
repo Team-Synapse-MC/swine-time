@@ -72,11 +72,18 @@ public class DireBoarEntity extends AbstractHorse implements GeoEntity, PlayerRi
         return super.canAttack(pTarget);
     }
 
+    // TODO: not working on players
+    @Override
+    public boolean doHurtTarget(Entity pEntity) {
+        pEntity.addDeltaMovement(new Vec3(0, 2.0, 0));
+        return super.doHurtTarget(pEntity);
+    }
+
     public static AttributeSupplier setAttributes() {
         return Monster.createMobAttributes()
                 .add(Attributes.MOVEMENT_SPEED, 0.25f)
                 .add(Attributes.ATTACK_DAMAGE, 6.0f)
-                .add(Attributes.MAX_HEALTH, 20.0f)
+                .add(Attributes.MAX_HEALTH, 50.0f)
                 .build();
     }
 
