@@ -42,6 +42,26 @@ public class AnimatedCooldownMeleeAttackGoal extends CooldownMeleeAttackGoal {
         this.geckomob = mob;
     }
 
+    public <T extends PathfinderMob & GeoEntity> AnimatedCooldownMeleeAttackGoal(
+            T mob,
+            double speedModifier,
+            boolean followTargetEvenIfNotSeen,
+            int attackIntervalTicks,
+            String controllerName,
+            String animationName,
+            int animationDurationTicks,
+            int attackHitTick,
+            boolean setSprinting,
+            boolean overshootFix) {
+
+        super(mob, speedModifier, followTargetEvenIfNotSeen, attackIntervalTicks, setSprinting, overshootFix);
+        this.controllerName = controllerName;
+        this.animationName = animationName;
+        this.animationDuration = animationDurationTicks;
+        this.attackHitTick = attackHitTick;
+        this.geckomob = mob;
+    }
+
     public AnimatedCooldownMeleeAttackGoal setFreezeMovement(int startTick, int endTick) {
         this.startFreezeTick = startTick;
         this.endFreezeTick = endTick;
@@ -86,6 +106,7 @@ public class AnimatedCooldownMeleeAttackGoal extends CooldownMeleeAttackGoal {
         double attackReach = this.mob.getMeleeAttackRangeSqr(target);
         if (distanceToTargetSq <= attackReach && this.ticksUntilNextAttack <= 0) {
             this.resetAttackCooldown();
+            this.mob.getLookControl().setLookAt(target, 10.0F, 10.0F);
 
             this.animationTicks = 0;
             this.hitDone = false;

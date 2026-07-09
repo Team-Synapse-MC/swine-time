@@ -44,17 +44,18 @@ public class DireBoarEntity extends AbstractHorse implements GeoEntity, PlayerRi
         this.goalSelector.addGoal(1, new FloatGoal(this));
         this.goalSelector.addGoal(4, new AnimatedCooldownMeleeAttackGoal(
                 this, 1.0D, false, 20,
-                "default", "attack", 20, 10
+                "default", "attack", 20, 10,
+                true, true
                 ).setFreezeMovement(0, 15)
         );
-        this.goalSelector.addGoal(3, new SprintAtTargetGoal(this, SPRINT_SPEED_MULT, 7, 3));
         this.goalSelector.addGoal(6, new DireBoarFollowOwner(this, 1.0D, 4.0F, 8.0F, 3.0F, false));
         this.goalSelector.addGoal(8, new RandomStrollGoal(this, 1.0D));
         this.goalSelector.addGoal(7, new BurrowGoal(this));
         this.goalSelector.addGoal(9, new LookAtPlayerGoal(this, Player.class, 8.0F));
         this.goalSelector.addGoal(10, new RandomLookAroundGoal(this));
 
-        this.targetSelector.addGoal(1, new BoarOwnerHurtByTargetGoal(this));
+        this.targetSelector.addGoal(2, new BoarOwnerHurtByTargetGoal(this));
+        this.targetSelector.addGoal(2, new BoarOwnerHurtTargetGoal(this));
     }
 
     public static AttributeSupplier setAttributes() {
@@ -63,6 +64,12 @@ public class DireBoarEntity extends AbstractHorse implements GeoEntity, PlayerRi
                 .add(Attributes.ATTACK_DAMAGE, 6.0f)
                 .add(Attributes.MAX_HEALTH, 20.0f)
                 .build();
+    }
+
+    @Override
+    public double getMeleeAttackRangeSqr(@NotNull LivingEntity pEntity) {
+        // half the default range
+        return super.getMeleeAttackRangeSqr(pEntity) * 0.7;
     }
 
     // use this later for ramming

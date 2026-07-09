@@ -180,6 +180,7 @@ public class CooldownMeleeAttackGoal extends Goal {
         double attackReach = this.mob.getMeleeAttackRangeSqr(target);
         if (distanceToTargetSq <= attackReach && this.ticksUntilNextAttack <= 0) {
             this.resetAttackCooldown();
+            this.mob.getLookControl().setLookAt(target, 10.0F, 10.0F);
             this.mob.swing(InteractionHand.MAIN_HAND);
             this.mob.doHurtTarget(target);
         }
