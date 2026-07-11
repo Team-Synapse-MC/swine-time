@@ -83,7 +83,7 @@ public class DireBoarEntity extends AbstractHorse implements GeoEntity, PlayerRi
         return Monster.createMobAttributes()
                 .add(Attributes.MOVEMENT_SPEED, 0.25f)
                 .add(Attributes.ATTACK_DAMAGE, 6.0f)
-                .add(Attributes.MAX_HEALTH, 50.0f)
+                .add(Attributes.MAX_HEALTH, 30.0f)
                 .build();
     }
 
