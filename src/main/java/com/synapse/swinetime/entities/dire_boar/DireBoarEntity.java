@@ -51,14 +51,11 @@ public class DireBoarEntity extends AbstractHorse implements GeoEntity, PlayerRi
                 true, true
                 ).setFreezeMovement(0, 15)
         );
-        this.goalSelector.addGoal(6, new DireBoarFollowOwner(this, 1.0D, 4.0F, 8.0F, 3.0F, false));
         this.goalSelector.addGoal(8, new RandomStrollGoal(this, 1.0D));
         this.goalSelector.addGoal(7, new BurrowGoal(this));
         this.goalSelector.addGoal(9, new LookAtPlayerGoal(this, Player.class, 8.0F));
         this.goalSelector.addGoal(10, new RandomLookAroundGoal(this));
 
-        this.targetSelector.addGoal(2, new BoarOwnerHurtByTargetGoal(this));
-        this.targetSelector.addGoal(2, new BoarOwnerHurtTargetGoal(this));
         this.targetSelector.addGoal(1, new HurtByTargetGoal(this));
     }
 
@@ -89,14 +86,14 @@ public class DireBoarEntity extends AbstractHorse implements GeoEntity, PlayerRi
 
     @Override
     public double getMeleeAttackRangeSqr(@NotNull LivingEntity pEntity) {
-        // half the default range
+        // lower the default range
         return super.getMeleeAttackRangeSqr(pEntity) * 0.7;
     }
 
-    // use this later for ramming
     @Override
     protected void executeRidersJump(float pPlayerJumpPendingScale, @NotNull Vec3 pTravelVector) {
-        super.executeRidersJump(pPlayerJumpPendingScale, pTravelVector);
+        Vec3 dir = this.getForward();
+        this.setDeltaMovement(dir.scale(pPlayerJumpPendingScale * 5.0f));
     }
     @Override
     public void onPlayerJump(int pJumpPower) {
