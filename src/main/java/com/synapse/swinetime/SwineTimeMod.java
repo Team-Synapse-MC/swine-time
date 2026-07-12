@@ -4,6 +4,7 @@ import com.mojang.logging.LogUtils;
 import com.synapse.swinetime.entities.ModEntities;
 import com.synapse.swinetime.items.ModCreativeModeTabs;
 import com.synapse.swinetime.items.ModItems;
+import com.synapse.swinetime.networking.ModNetworking;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.BuildCreativeModeTabContentsEvent;
 import net.minecraftforge.event.server.ServerStartingEvent;
@@ -14,7 +15,6 @@ import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import org.slf4j.Logger;
 
-// The value here should match an entry in the META-INF/mods.toml file
 @Mod(SwineTimeMod.MODID)
 public class SwineTimeMod
 {
@@ -32,6 +32,7 @@ public class SwineTimeMod
 
         ModItems.register(modEventBus);
         ModEntities.register(modEventBus);
+        ModNetworking.register();
 
         MinecraftForge.EVENT_BUS.register(this);
 

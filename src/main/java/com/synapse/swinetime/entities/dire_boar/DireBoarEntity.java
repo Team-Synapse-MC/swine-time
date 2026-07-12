@@ -1,6 +1,8 @@
 package com.synapse.swinetime.entities.dire_boar;
 
 import com.synapse.swinetime.entities.goals.*;
+import com.synapse.swinetime.networking.ModNetworking;
+import com.synapse.swinetime.networking.RamPacketC2S;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
@@ -16,6 +18,7 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -28,11 +31,14 @@ import software.bernie.geckolib.core.animation.AnimationController;
 import software.bernie.geckolib.core.animation.RawAnimation;
 import software.bernie.geckolib.core.object.PlayState;
 
+import java.util.List;
 import java.util.Objects;
 
 public class DireBoarEntity extends AbstractHorse implements GeoEntity, PlayerRideable, OwnableEntity {
     private final AnimatableInstanceCache cache = new SingletonAnimatableInstanceCache(this);
     private static final float SPRINT_SPEED_MULT = 1.5f;
+    private float rammingTicks = 0;
+    private float rammingSpeed = 0;
 
     public DireBoarEntity(EntityType<? extends AbstractHorse> pEntityType, Level pLevel) {
         super(pEntityType, pLevel);
@@ -91,13 +97,32 @@ public class DireBoarEntity extends AbstractHorse implements GeoEntity, PlayerRi
     }
 
     @Override
-    protected void executeRidersJump(float pPlayerJumpPendingScale, @NotNull Vec3 pTravelVector) {
-        Vec3 dir = this.getForward();
-        this.setDeltaMovement(dir.scale(pPlayerJumpPendingScale * 5.0f));
+    protected void tickRidden(@NotNull Player pPlayer, @NotNull Vec3 pTravelVector) {
+
+        if (rammingTicks > 0) {
+            Vec3 dir = this.getForward();
+            this.setDeltaMovement(dir.scale(rammingSpeed));
+
+            rammingTicks--;
+
+            AABB frontBox = this.getBoundingBox().inflate(1.5);
+            List<LivingEntity> list = level().getEntitiesOfClass(LivingEntity.class, frontBox,
+                    (e) -> e != this && e.isAlive()
+            );
+
+            if (!list.isEmpty()) {
+                LivingEntity hitEntity = list.get(0);
+                ModNetworking.sendToServer(new RamPacketC2S(hitEntity.getId()));
+            }
+        }
+        super.tickRidden(pPlayer, pTravelVector);
     }
+
     @Override
-    public void onPlayerJump(int pJumpPower) {
-        super.onPlayerJump(pJumpPower);
+    protected void executeRidersJump(float pPlayerJumpPendingScale, @NotNull Vec3 pTravelVector) {
+        if (rammingTicks > 0) return;
+        rammingTicks = 20;
+        rammingSpeed = pPlayerJumpPendingScale;
     }
 
     @Override
