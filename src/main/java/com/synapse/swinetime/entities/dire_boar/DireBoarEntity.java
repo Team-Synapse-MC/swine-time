@@ -1,8 +1,6 @@
 package com.synapse.swinetime.entities.dire_boar;
 
 import com.synapse.swinetime.entities.goals.*;
-import com.synapse.swinetime.networking.ModNetworking;
-import com.synapse.swinetime.networking.RamPacketC2S;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
@@ -112,7 +110,7 @@ public class DireBoarEntity extends AbstractHorse implements GeoEntity, PlayerRi
 
             if (!list.isEmpty()) {
                 LivingEntity hitEntity = list.get(0);
-                ModNetworking.sendToServer(new RamPacketC2S(hitEntity.getId()));
+                hitEntity.hurt(this.damageSources().mobAttack(this), 10f);
             }
         }
         super.tickRidden(pPlayer, pTravelVector);
@@ -120,9 +118,14 @@ public class DireBoarEntity extends AbstractHorse implements GeoEntity, PlayerRi
 
     @Override
     protected void executeRidersJump(float pPlayerJumpPendingScale, @NotNull Vec3 pTravelVector) {
+    }
+
+    @Override
+    public void handleStartJump(int pJumpPower) {
+        super.handleStartJump(pJumpPower);
         if (rammingTicks > 0) return;
         rammingTicks = 20;
-        rammingSpeed = pPlayerJumpPendingScale;
+        rammingSpeed = pJumpPower * 0.5f;
     }
 
     @Override

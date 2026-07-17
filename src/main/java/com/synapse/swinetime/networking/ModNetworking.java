@@ -27,13 +27,5 @@ public class ModNetworking {
     }
 
     public static void register() {
-        // Client → Server
-        CHANNEL.registerMessage(
-                packetId++,
-                RamPacketC2S.class,
-                RamPacketC2S::encode,
-                RamPacketC2S::decode,
-                RamPacketC2S::handle
-        );
     }
 }
