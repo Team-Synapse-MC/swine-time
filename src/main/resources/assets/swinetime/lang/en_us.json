@@ -1,3 +1,6 @@
 {
-  "entity.swinetime.dire_boar": "Dire Boar"
+  "entity.swinetime.dire_boar": "Dire Boar",
+  "item.swinetime.dire_boar_spawn_egg": "Dire Boar Spawn Egg",
+  "item.swinetime.chunky_chops": "Chunky Chops",
+  "item.swinetime.seared_chops": "Seared Chops"
 }

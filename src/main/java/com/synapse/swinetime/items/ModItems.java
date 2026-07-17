@@ -15,6 +15,12 @@ public class ModItems {
     public static final RegistryObject<Item> DIRE_BOAR_SPAWN_EGG = ITEMS.register("dire_boar_spawn_egg",
             () -> new ForgeSpawnEggItem(ModEntities.DIRE_BOAR, 0x969090, 0x9d9382, new Item.Properties()));
 
+    public static final RegistryObject<Item> CHUNKY_CHOPS = ITEMS.register("chunky_chops",
+            ChunkyChops::new);
+
+    public static final RegistryObject<Item> SEARED_CHOPS = ITEMS.register("seared_chops",
+            SearedChops::new);
+
     public static void register(IEventBus eventBus) {
         ITEMS.register(eventBus);
     }

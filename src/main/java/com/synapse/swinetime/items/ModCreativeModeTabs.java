@@ -19,6 +19,8 @@ public class ModCreativeModeTabs {
                     .title(Component.translatable("creativetab.swinetime_tab"))
                     .displayItems((pParameters, pOutput) -> {
                         pOutput.accept(ModItems.DIRE_BOAR_SPAWN_EGG.get());
+                        pOutput.accept(ModItems.CHUNKY_CHOPS.get());
+                        pOutput.accept(ModItems.SEARED_CHOPS.get());
                     })
                     .build());
 
