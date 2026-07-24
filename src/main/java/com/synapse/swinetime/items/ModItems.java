@@ -21,6 +21,9 @@ public class ModItems {
     public static final RegistryObject<Item> SEARED_CHOPS = ITEMS.register("seared_chops",
             SearedChops::new);
 
+    public static final RegistryObject<Item> HEARTY_POTATO = ITEMS.register("hearty_potato",
+            HeartyPotatoItem::new);
+
     public static void register(IEventBus eventBus) {
         ITEMS.register(eventBus);
     }

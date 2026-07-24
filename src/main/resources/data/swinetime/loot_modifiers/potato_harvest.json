@@ -1,0 +1,20 @@
+{
+  "type": "swinetime:add_item_loot_modifier",
+  "conditions": [
+    {
+      "condition": "minecraft:block_state_property",
+      "block": "minecraft:potatoes",
+      "properties": {
+        "age": "7"
+      }
+    },
+    {
+      "condition": "minecraft:random_chance",
+      "chance": 0.05
+    }
+  ],
+  "itemStack": {
+    "item": "swinetime:hearty_potato",
+    "count": 1
+  }
+}

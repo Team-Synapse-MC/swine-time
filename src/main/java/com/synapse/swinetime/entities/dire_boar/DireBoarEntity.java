@@ -1,6 +1,7 @@
 package com.synapse.swinetime.entities.dire_boar;
 
 import com.synapse.swinetime.entities.goals.*;
+import com.synapse.swinetime.items.ModItems;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
@@ -9,6 +10,7 @@ import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.ai.goal.*;
 import net.minecraft.world.entity.ai.goal.target.HurtByTargetGoal;
+import net.minecraft.world.entity.ai.util.DefaultRandomPos;
 import net.minecraft.world.entity.animal.horse.AbstractHorse;
 import net.minecraft.world.entity.monster.Monster;
 import net.minecraft.world.entity.player.Player;
@@ -155,8 +157,7 @@ public class DireBoarEntity extends AbstractHorse implements GeoEntity, PlayerRi
             return super.mobInteract(pPlayer, pHand);
         }
 
-        // TODO: fill in for hearty potato
-        if (!this.isTamed() && item.equals(Items.BONE)) {
+        if (!this.isTamed() && item.equals(ModItems.HEARTY_POTATO.get())) {
             tameWithName(pPlayer);
             return InteractionResult.SUCCESS;
         } else {
@@ -176,6 +177,24 @@ public class DireBoarEntity extends AbstractHorse implements GeoEntity, PlayerRi
             return baseSpeed * SPRINT_SPEED_MULT;
         }
         return baseSpeed;
+    }
+
+    public void panicFromDanger(Vec3 dangerPos) {
+        Vec3 escape = DefaultRandomPos.getPosAway(
+                this,
+                10,
+                7,
+                dangerPos
+        );
+
+        if (escape != null) {
+            this.getNavigation().moveTo(
+                    escape.x,
+                    escape.y,
+                    escape.z,
+                    1.5D
+            );
+        }
     }
 
     // breeding foods

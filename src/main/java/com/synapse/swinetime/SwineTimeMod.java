@@ -4,6 +4,7 @@ import com.mojang.logging.LogUtils;
 import com.synapse.swinetime.entities.ModEntities;
 import com.synapse.swinetime.items.ModCreativeModeTabs;
 import com.synapse.swinetime.items.ModItems;
+import com.synapse.swinetime.loot_modifiers.ModLootModifiers;
 import com.synapse.swinetime.networking.ModNetworking;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.BuildCreativeModeTabContentsEvent;
@@ -33,6 +34,7 @@ public class SwineTimeMod
         ModItems.register(modEventBus);
         ModEntities.register(modEventBus);
         ModNetworking.register();
+        ModLootModifiers.register(modEventBus);
 
         MinecraftForge.EVENT_BUS.register(this);
 

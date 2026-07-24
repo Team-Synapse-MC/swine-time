@@ -21,6 +21,7 @@ public class ModCreativeModeTabs {
                         pOutput.accept(ModItems.DIRE_BOAR_SPAWN_EGG.get());
                         pOutput.accept(ModItems.CHUNKY_CHOPS.get());
                         pOutput.accept(ModItems.SEARED_CHOPS.get());
+                        pOutput.accept(ModItems.HEARTY_POTATO.get());
                     })
                     .build());
 
