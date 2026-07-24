@@ -112,6 +112,11 @@ public class DireBoarEntity extends AbstractHorse implements GeoEntity, PlayerRi
 
             if (!list.isEmpty()) {
                 LivingEntity hitEntity = list.get(0);
+                if (hitEntity instanceof Player player) {
+                    if (player == getOwner()) {
+                        return;
+                    }
+                }
                 hitEntity.hurt(this.damageSources().mobAttack(this), 10f);
             }
         }
