@@ -10,7 +10,6 @@ import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.ai.goal.*;
 import net.minecraft.world.entity.ai.goal.target.HurtByTargetGoal;
-import net.minecraft.world.entity.ai.util.DefaultRandomPos;
 import net.minecraft.world.entity.animal.horse.AbstractHorse;
 import net.minecraft.world.entity.monster.Monster;
 import net.minecraft.world.entity.player.Player;
@@ -36,9 +35,8 @@ import java.util.Objects;
 
 public class DireBoarEntity extends AbstractHorse implements GeoEntity, PlayerRideable, OwnableEntity {
     private final AnimatableInstanceCache cache = new SingletonAnimatableInstanceCache(this);
-    private static final float SPRINT_SPEED_MULT = 1.5f;
+    private static final float SPRINT_SPEED_MULT = 10.0f;
     private float rammingTicks = 0;
-    private float rammingSpeed = 0;
 
     public DireBoarEntity(EntityType<? extends AbstractHorse> pEntityType, Level pLevel) {
         super(pEntityType, pLevel);
@@ -52,7 +50,7 @@ public class DireBoarEntity extends AbstractHorse implements GeoEntity, PlayerRi
     protected void registerGoals() {
         this.goalSelector.addGoal(1, new FloatGoal(this));
         this.goalSelector.addGoal(4, new AnimatedCooldownMeleeAttackGoal(
-                this, 1.0D, false, 20,
+                this, 1.2D, false, 20,
                 "default", "attack", 20, 10,
                 true, true
                 ).setFreezeMovement(0, 15)
@@ -75,10 +73,9 @@ public class DireBoarEntity extends AbstractHorse implements GeoEntity, PlayerRi
         return super.canAttack(pTarget);
     }
 
-    // TODO: not working on players
     @Override
-    public boolean doHurtTarget(Entity pEntity) {
-        pEntity.addDeltaMovement(new Vec3(0, 2.0, 0));
+    public boolean doHurtTarget(@NotNull Entity pEntity) {
+//        pEntity.addDeltaMovement(new Vec3(0, 2.0, 0)); // this doesnt seem to work on players
         return super.doHurtTarget(pEntity);
     }
 
@@ -98,12 +95,13 @@ public class DireBoarEntity extends AbstractHorse implements GeoEntity, PlayerRi
 
     @Override
     protected void tickRidden(@NotNull Player pPlayer, @NotNull Vec3 pTravelVector) {
-
         if (rammingTicks > 0) {
-            Vec3 dir = this.getForward();
-            this.setDeltaMovement(dir.scale(rammingSpeed));
-
             rammingTicks--;
+
+            if (rammingTicks <= 0) {
+                this.setIsJumping(false);
+                this.setStanding(false);
+            }
 
             AABB frontBox = this.getBoundingBox().inflate(1.5);
             List<LivingEntity> list = level().getEntitiesOfClass(LivingEntity.class, frontBox,
@@ -124,30 +122,38 @@ public class DireBoarEntity extends AbstractHorse implements GeoEntity, PlayerRi
     }
 
     @Override
+    public boolean canSpawnSprintParticle() {
+        return super.canSpawnSprintParticle() && getDeltaMovement().lengthSqr() > 1;
+    }
+
+    @Override
     protected void executeRidersJump(float pPlayerJumpPendingScale, @NotNull Vec3 pTravelVector) {
     }
 
     @Override
     public void handleStartJump(int pJumpPower) {
+        // enables "standing", which results in a rider position translation
         super.handleStartJump(pJumpPower);
+
         if (rammingTicks > 0) return;
-        rammingTicks = 20;
-        rammingSpeed = pJumpPower * 0.5f;
+
+        // max jumpPower is 90
+        rammingTicks = 20 * ((float) pJumpPower / 90);
     }
 
     @Override
     public boolean canJump() {
-        return true;
+        return isSprinting() || Objects.requireNonNull(this.getControllingPassenger()).isSprinting();
     }
 
     @Override
     public boolean isSaddled() {
-        return true;
+        return super.isSaddled();
     }
 
     @Override
     public boolean isSaddleable() {
-        return false;
+        return true;
     }
 
     @Override
@@ -176,30 +182,12 @@ public class DireBoarEntity extends AbstractHorse implements GeoEntity, PlayerRi
     }
 
     @Override
-    public float getSpeed() {
-        float baseSpeed = (float) this.getAttributeBaseValue(Attributes.MOVEMENT_SPEED);
-        if (isSprinting()) {
+    protected float getRiddenSpeed(@NotNull Player pPlayer) {
+        float baseSpeed = 0.05f;
+        if (isSprinting() || Objects.requireNonNull(this.getControllingPassenger()).isSprinting()) {
             return baseSpeed * SPRINT_SPEED_MULT;
         }
         return baseSpeed;
-    }
-
-    public void panicFromDanger(Vec3 dangerPos) {
-        Vec3 escape = DefaultRandomPos.getPosAway(
-                this,
-                10,
-                7,
-                dangerPos
-        );
-
-        if (escape != null) {
-            this.getNavigation().moveTo(
-                    escape.x,
-                    escape.y,
-                    escape.z,
-                    1.5D
-            );
-        }
     }
 
     // breeding foods
@@ -218,7 +206,7 @@ public class DireBoarEntity extends AbstractHorse implements GeoEntity, PlayerRi
 
     private PlayState predicate(software.bernie.geckolib.core.animation.AnimationState<DireBoarEntity> animationState) {
         if (animationState.isMoving()) {
-            if (this.isVehicle() && !this.getPassengers().isEmpty() && this.getPassengers().get(0) instanceof Player rider) {
+            if (this.isVehicle() && !this.getPassengers().isEmpty() && this.getControllingPassenger() instanceof Player rider) {
                 if (rider.isSprinting() || this.isSprinting()) {
                     animationState.setAndContinue(RawAnimation.begin().then("Run", Animation.LoopType.LOOP));
                 } else {
