@@ -97,10 +97,12 @@ public class DireBoarEntity extends AbstractHorse implements GeoEntity, PlayerRi
     protected void tickRidden(@NotNull Player pPlayer, @NotNull Vec3 pTravelVector) {
         if (rammingTicks > 0) {
             rammingTicks--;
+            this.setSprinting(true);
 
             if (rammingTicks <= 0) {
                 this.setIsJumping(false);
                 this.setStanding(false);
+                this.setSprinting(false);
             }
 
             AABB frontBox = this.getBoundingBox().inflate(1.5);
@@ -143,7 +145,7 @@ public class DireBoarEntity extends AbstractHorse implements GeoEntity, PlayerRi
 
     @Override
     public boolean canJump() {
-        return isSprinting() || Objects.requireNonNull(this.getControllingPassenger()).isSprinting();
+        return true;
     }
 
     @Override
@@ -153,11 +155,6 @@ public class DireBoarEntity extends AbstractHorse implements GeoEntity, PlayerRi
 
     @Override
     public boolean isSaddleable() {
-        return true;
-    }
-
-    @Override
-    public boolean canSprint() {
         return true;
     }
 
