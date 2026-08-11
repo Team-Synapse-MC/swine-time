@@ -10,6 +10,7 @@ import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.ai.goal.*;
 import net.minecraft.world.entity.ai.goal.target.HurtByTargetGoal;
+import net.minecraft.world.entity.ai.util.DefaultRandomPos;
 import net.minecraft.world.entity.animal.horse.AbstractHorse;
 import net.minecraft.world.entity.monster.Monster;
 import net.minecraft.world.entity.player.Player;
@@ -37,6 +38,7 @@ public class DireBoarEntity extends AbstractHorse implements GeoEntity, PlayerRi
     private final AnimatableInstanceCache cache = new SingletonAnimatableInstanceCache(this);
     private static final float SPRINT_SPEED_MULT = 10.0f;
     private float rammingTicks = 0;
+    private boolean isFleeing = false;
 
     public DireBoarEntity(EntityType<? extends AbstractHorse> pEntityType, Level pLevel) {
         super(pEntityType, pLevel);
@@ -121,6 +123,30 @@ public class DireBoarEntity extends AbstractHorse implements GeoEntity, PlayerRi
             }
         }
         super.tickRidden(pPlayer, pTravelVector);
+    }
+
+    @Override
+    public void tick() {
+        super.tick();
+
+        if (!this.isFleeing) {
+            AABB box = this.getBoundingBox().inflate(40);
+            List<LightningBolt> list = level().getEntitiesOfClass(LightningBolt.class, box);
+
+            if (!list.isEmpty()) {
+                LightningBolt bolt = list.get(0);
+                Vec3 random_position = DefaultRandomPos.getPosAway(this, 15, 5, bolt.position());
+                if (random_position == null) return;
+                this.getNavigation().moveTo(random_position.x, random_position.y, random_position.z, 1.4);
+                this.setSprinting(true);
+                this.isFleeing = true;
+            }
+        } else {
+            if (this.getNavigation().isDone()) {
+                this.isFleeing = false;
+                this.setSprinting(false);
+            }
+        }
     }
 
     @Override
