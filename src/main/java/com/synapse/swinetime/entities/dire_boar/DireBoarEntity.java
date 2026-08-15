@@ -130,16 +130,14 @@ public class DireBoarEntity extends AbstractHorse implements GeoEntity, PlayerRi
         super.tick();
 
         if (!this.isFleeing) {
-            AABB box = this.getBoundingBox().inflate(40);
+            AABB box = this.getBoundingBox().inflate(100);
             List<LightningBolt> list = level().getEntitiesOfClass(LightningBolt.class, box);
 
             if (!list.isEmpty()) {
                 LightningBolt bolt = list.get(0);
-                Vec3 random_position = DefaultRandomPos.getPosAway(this, 15, 5, bolt.position());
+                Vec3 random_position = DefaultRandomPos.getPosAway(this, 20, 5, bolt.position());
                 if (random_position == null) return;
-                this.getNavigation().moveTo(random_position.x, random_position.y, random_position.z, 1.4);
-                this.setSprinting(true);
-                this.isFleeing = true;
+                flee(random_position);
             }
         } else {
             if (this.getNavigation().isDone()) {
@@ -147,6 +145,12 @@ public class DireBoarEntity extends AbstractHorse implements GeoEntity, PlayerRi
                 this.setSprinting(false);
             }
         }
+    }
+
+    public void flee(Vec3 position) {
+        this.getNavigation().moveTo(position.x, position.y, position.z, 1.4);
+        this.setSprinting(true);
+        this.isFleeing = true;
     }
 
     @Override
